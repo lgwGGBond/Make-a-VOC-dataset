@@ -1,0 +1,32 @@
+import os
+
+
+def batch_rename_images(folder_path, prefix):
+    # 获取文件夹中所有文件名
+    file_list = os.listdir(folder_path)
+
+    # 过滤出图片文件（可以根据实际需求增加更多图片格式的判断）
+    image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
+    image_files = [file for file in file_list if os.path.splitext(file)[1].lower() in image_extensions]
+
+    # 确保按照文件名排序
+    image_files.sort()
+
+    # 遍历并重命名图片文件
+    for index, old_filename in enumerate(image_files, start=1):
+        # 构建新的文件名
+        new_filename = f"{prefix}_{index}.jpg"
+
+        # 拼接完整路径
+        old_filepath = os.path.join(folder_path, old_filename)
+        new_filepath = os.path.join(folder_path, new_filename)
+
+        # 重命名文件
+        os.rename(old_filepath, new_filepath)
+        print(f"将文件 {old_filename} 重命名为 {new_filename}")
+
+
+# 调用函数进行批量重命名
+images_folder_path = '/home/tianbot/vid_frame'  # 替换为你的图片文件夹路径
+new_prefix = 'photo'  # 替换为新的文件名前缀
+batch_rename_images(images_folder_path, new_prefix)
