@@ -1,0 +1,34 @@
+import os
+import cv2
+
+def batch_resize_images(folder_path, target_size):
+    # 获取文件夹中所有文件名
+    file_list = os.listdir(folder_path)
+
+    # 过滤出图片文件（可以根据实际需求增加更多图片格式的判断）
+    image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
+    image_files = [file for file in file_list if os.path.splitext(file)[1].lower() in image_extensions]
+
+    # 遍历并调整图片大小
+    for filename in image_files:
+        # 拼接完整路径
+        filepath = os.path.join(folder_path, filename)
+
+        # 读取图片
+        image = cv2.imread(filepath)
+
+        # 检查是否成功读取图片
+        if image is not None:
+            # 调整图片大小
+            resized_image = cv2.resize(image, target_size)
+
+            # 保存调整大小后的图片
+            cv2.imwrite(filepath, resized_image)
+            print(f"已调整大小：{filename}")
+        else:
+            print(f"无法读取图片：{filename}")
+
+# 调用函数进行批处理调整图片大小
+images_folder_path = '/home/tianbot/vid_frame'  # 替换为你的图片文件夹路径
+target_size = (500, 500)  # 替换为目标大小，例如 (width, height)
+batch_resize_images(images_folder_path, target_size)
