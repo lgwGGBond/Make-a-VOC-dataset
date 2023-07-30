@@ -1,0 +1,37 @@
+import cv2
+import os
+import sys
+#参数1包含视频片段的路径
+input_path = "/home/tianbot/vid"
+#参数2设定每隔多少帧截取一帧
+fram_interval = 1
+#列出文件夹下所有的视频文件
+filenames = os.listdir(input_path)
+#获取文件夹名称
+video_prefix = input_path.split(os.sep)[-1]
+#建立一个新文件夹，名称为原文件夹名称后加上_frames
+frame_path = '{}_frame'.format(input_path)
+if not os.path.exists(frame_path):
+    os.mkdir(frame_path)
+#初始化一个VideoCapture对象
+cap = cv2.VideoCapture()
+#遍历所有文件
+for filename in filenames:
+    filepath = os.sep.join([input_path,filename])
+    #VideoCapture::open函数可以从文件获取视频
+    cap.open(filepath)
+    #获取视频帧数
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    # 对于一些低画质的摄像头，前面的帧可能不稳定，略过
+    for i in range(42):
+        cap.read()
+    for i in range(n_frames):
+        ret, frame = cap.read()
+        #每隔frame_interval帧进行一次截屏操作
+        if i % fram_interval == 0:
+            imagename = '{}_{:0>6d}.jpg'.format(filename.split('.')[0],i)
+            imagepath = os.sep.join([frame_path,imagename])
+            print('exported {}!'.format(imagepath))
+            cv2.imwrite(imagepath,frame)
+#执行结束释放资源
+cap.release()
