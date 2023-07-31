@@ -3,3 +3,4 @@
 2.rename all jpg in order
 3.uniform pictures size
 4.pip install labelimg
+5.deep study
