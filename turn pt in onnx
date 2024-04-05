@@ -1,0 +1,43 @@
+import torch
+import os
+
+# 确保YOLOv5的代码路径在Python的搜索路径中
+import sys
+sys.path.append(r"D:\commn\yolov5-master")
+
+from models.yolo import Model  # 导入YOLOv5模型定义
+from utils.general import check_img_size  # 导入辅助函数
+
+# 加载模型权重
+checkpoint_path = r"D:\commn\yolov5-master\runs\train\exp5\weights\best.pt"
+checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+
+# 提取模型的状态字典
+state_dict = checkpoint['model'].state_dict()
+
+# 假设你知道你的模型配置文件的路径，YOLOv5模型初始化需要这个配置文件
+config_path = r"D:\commn\yolov5-master\models\yolov5s.yaml"  # 以yolov5s为例，根据你的模型选择相应的配置文件
+
+# 初始化模型
+model = Model(config_path)
+
+# 将权重加载到模型的状态字典中
+model.load_state_dict(state_dict)
+
+# 设置模型为评估模式
+model.eval()
+
+# 定义输入输出的名称
+input_names = ['input']
+output_names = ['output']
+
+# 创建一个示例输入，你需要根据实际情况调整尺寸
+img_size = 640  # 常见的输入尺寸
+img_size = check_img_size(img_size, s=model.stride.max())  # 确保尺寸是合适的
+x = torch.randn(1, 3, img_size, img_size, requires_grad=True)
+
+# 导出模型为ONNX格式
+onnx_path = "best.onnx"
+torch.onnx.export(model, x, onnx_path, input_names=input_names, output_names=output_names, verbose=True)
+
+print(f"模型成功导出到 {onnx_path}")
